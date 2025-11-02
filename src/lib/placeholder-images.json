@@ -1,0 +1,10 @@
+{
+  "placeholderImages": [
+    {
+      "id": "map-default",
+      "description": "Mappa di default personalizzata.",
+      "imageUrl": "/mappa-default.jpg",
+      "imageHint": "custom map grid"
+    }
+  ]
+}
