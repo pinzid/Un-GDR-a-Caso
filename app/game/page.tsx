@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { GameLayout } from "@/components/game/game-layout";
+import { GameLayout } from "./components/game-layout";
 import { Suspense } from 'react';
 
 function GamePageContent() {

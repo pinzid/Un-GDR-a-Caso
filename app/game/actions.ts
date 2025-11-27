@@ -19,8 +19,9 @@ import {
   updateCharacter_INTERNAL,
   removeCharacter_INTERNAL,
   resetForNewMap_INTERNAL,
+  addChatMessage_INTERNAL,
 } from '@/lib/game-state';
-import type { GameState, Character, RevealedArea, Drawing } from '@/lib/types';
+import type { GameState, Character, RevealedArea, Drawing, ChatMessage } from '@/lib/types';
 import { headers } from 'next/headers';
 import { use } from 'react';
 
@@ -51,6 +52,18 @@ export async function getGameState(): Promise<GameState> {
     return getGameState_forPlayer();
   }
   return getGameState_INTERNAL();
+}
+
+export async function addChatMessage(content: ChatMessage['content']): Promise<void> {
+  const role = getRoleFromHeaders();
+  const senderName = role.charAt(0).toUpperCase() + role.slice(1);
+  const message: ChatMessage = {
+    id: `msg-${Date.now()}`,
+    sender: { name: senderName, role },
+    content,
+    timestamp: new Date().toISOString(),
+  };
+  addChatMessage_INTERNAL(message);
 }
 
 export async function updateCharacters(characters: Character[]): Promise<void> {
@@ -114,6 +127,3 @@ export async function updateCharacterVisibility(characterId: string, isVisible: 
 export async function resetForNewMap(characterIdsToKeep: string[]): Promise<void> {
   resetForNewMap_INTERNAL(characterIdsToKeep);
 }
-    
-
-    

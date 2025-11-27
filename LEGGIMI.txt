@@ -1,0 +1,2 @@
+Per far partire il gioco, prima serve installare Nodejs che serve a gestire il server,
+poi dentro la cartella si va prima AVVIA SERVER e poi per entrare AVVIA GIOCO

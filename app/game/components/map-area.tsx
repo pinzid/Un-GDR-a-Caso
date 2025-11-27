@@ -3,8 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { CharacterToken } from './character-token';
-import type { Character, RevealedArea, Drawing, DrawingSettings } from '@/lib/types';
-import { Ruler, Square, Plus, Minus, Search, Circle, Eye, Hand, Pencil, Brush, Eraser, Palette, Trash2, Triangle, EyeOff, Sparkles } from 'lucide-react';
+import type { Character, RevealedArea, Drawing, DrawingSettings, ChatMessage } from '@/lib/types';
+import { Ruler, Square, Plus, Minus, Search, Circle, Eye, Hand, Pencil, Brush, Eraser, Palette, Trash2, Triangle, EyeOff, Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FogOfWar } from './fog-of-war';
 import { cn } from '@/lib/utils';
@@ -13,9 +13,10 @@ import { DrawingCanvas } from './drawing-canvas';
 import { getStroke } from 'perfect-freehand';
 import { getSvgPathFromStroke } from '@/lib/drawing-utils';
 import { DRAW_COLORS } from '@/lib/colors';
-import { Separator } from '../ui/separator';
+import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { GameIcon } from './icons';
+import { ChatPanel } from './chat-panel';
 
 interface MapAreaProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onMouseDown' | 'onMouseUp' | 'onMouseMove' | 'onTouchStart' | 'onTouchMove' | 'onTouchEnd'> {
   characters: Character[];
@@ -48,6 +49,8 @@ interface MapAreaProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onMou
   role: 'master' | 'player' | 'group';
   viewState: { zoom: number; pan: { x: number; y: number } };
   setViewState: React.Dispatch<React.SetStateAction<{ zoom: number; pan: { x: number; y: number } }>>;
+  chatMessages: ChatMessage[];
+  onSendMessage: (content: ChatMessage['content']) => Promise<void>;
 }
 
 const GRID_SIZE = 50; // pixels per grid square
@@ -81,7 +84,7 @@ function getArcPath(x: number, y: number, radius: number, startAngle: number, en
 }
 
 export const MapArea = React.forwardRef<HTMLDivElement, MapAreaProps>(
-  ({ characters, revealedAreas, setRevealedAreas, drawings, setDrawings, mapImage, onMouseDownOnToken, onTouchStartOnToken, onMouseUpOnToken, onTouchEndOnToken, onMouseDownOnMap, onTouchStartOnMap, draggingCharacterId, startDragPos, currentDragPos, isMeasuring, setIsMeasuring, role, viewState, setViewState, onMouseMove, onMouseUp, onMouseLeave, onTouchMove, onTouchEnd, ...props }, ref) => {
+  ({ characters, revealedAreas, setRevealedAreas, drawings, setDrawings, mapImage, onMouseDownOnToken, onTouchStartOnToken, onMouseUpOnToken, onTouchEndOnToken, onMouseDownOnMap, onTouchStartOnMap, draggingCharacterId, startDragPos, currentDragPos, isMeasuring, setIsMeasuring, role, viewState, setViewState, onMouseMove, onMouseUp, onMouseLeave, onTouchMove, onTouchEnd, chatMessages, onSendMessage, ...props }, ref) => {
     
     const isMobile = useIsMobile();
     const [revealMode, setRevealMode] = useState<RevealMode>(null);
@@ -110,6 +113,7 @@ export const MapArea = React.forwardRef<HTMLDivElement, MapAreaProps>(
     const [isRevealPopoverOpen, setIsRevealPopoverOpen] = useState(false);
     const [isDrawPopoverOpen, setIsDrawPopoverOpen] = useState(false);
     const [isColorPopoverOpen, setIsColorPopoverOpen] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
 
     useEffect(() => {
@@ -858,8 +862,8 @@ export const MapArea = React.forwardRef<HTMLDivElement, MapAreaProps>(
           </div>
         </div>
         
-        <div className="absolute bottom-4 right-16 md:right-4 flex flex-col items-end gap-2 z-30">
-            <div className="flex flex-col-reverse md:flex-row gap-2">
+        <div className="absolute bottom-4 right-4 flex flex-col items-end gap-2 z-30">
+             <div className="flex flex-col-reverse md:flex-row gap-2">
                 <Button variant="secondary" size="icon" onClick={() => handleZoom(0.2)}>
                     <Plus />
                 </Button>
@@ -871,6 +875,14 @@ export const MapArea = React.forwardRef<HTMLDivElement, MapAreaProps>(
                 </Button>
             </div>
             <div className="flex flex-col-reverse md:flex-row gap-2 items-end">
+                 <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    onClick={() => setIsChatOpen(!isChatOpen)}
+                    aria-label="Toggle chat"
+                >
+                    <MessageSquare />
+                </Button>
                 <Button
                     variant={isNavMode ? 'default' : 'secondary'}
                     size="icon"
@@ -1019,6 +1031,14 @@ export const MapArea = React.forwardRef<HTMLDivElement, MapAreaProps>(
               )}
             </div>
         </div>
+         {isChatOpen && (
+              <ChatPanel 
+                role={role} 
+                messages={chatMessages}
+                onSendMessage={onSendMessage} 
+                onClose={() => setIsChatOpen(false)}
+              />
+            )}
       </div>
     );
   }

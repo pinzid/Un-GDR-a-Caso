@@ -1,6 +1,7 @@
+
 import 'server-only';
 import { initialCharacters } from './initial-data';
-import type { GameState, Character, RevealedArea, Drawing } from './types';
+import type { GameState, Character, RevealedArea, Drawing, ChatMessage } from './types';
 import placeholderData from '@/lib/placeholder-images.json';
 import fs from 'fs';
 import path from 'path';
@@ -71,6 +72,7 @@ function createNewGameState(): GameState {
         characters: sortedInitial,
         revealedAreas: [],
         drawings: [],
+        chatMessages: [],
         currentTurnId: sortedInitial[0]?.id || null,
         mapImage: placeholderData.placeholderImages[0],
         timestamp: new Date().toISOString(),
@@ -90,7 +92,7 @@ function loadInitialState(): GameState {
           playerId: null, 
           isVisibleToPlayers: c.isPlayerCharacter ? true : (c.isVisibleToPlayers || false),
       }));
-      return { ...savedState, characters: resetCharacters };
+      return { ...savedState, characters: resetCharacters, chatMessages: savedState.chatMessages || [] };
     }
   } catch (error) {
     console.error("Error reading save file, starting with initial state:", error);
@@ -147,7 +149,12 @@ export function setGameState_INTERNAL(newState: GameState, saveToFile: boolean =
       playerId: null,
       isVisibleToPlayers: c.isPlayerCharacter ? true : (c.isVisibleToPlayers || false),
   }));
-  updateGameState({ ...newState, characters: resetCharacters }, saveToFile);
+  updateGameState({ ...newState, characters: resetCharacters, chatMessages: newState.chatMessages || [] }, saveToFile);
+}
+
+export function addChatMessage_INTERNAL(message: ChatMessage): void {
+  const newMessages = [...(gameState.chatMessages || []), message];
+  updateGameState({ chatMessages: newMessages });
 }
 
 export function updateCharacters_INTERNAL(characters: Character[]): void {
@@ -289,6 +296,7 @@ export function resetForNewMap_INTERNAL(characterIdsToKeep: string[]): void {
         characters: sortedCharacters,
         revealedAreas: [],
         drawings: [],
+        chatMessages: [],
         currentTurnId: sortedCharacters[0]?.id || null,
         mapImage: placeholderData.placeholderImages[0],
         timestamp: new Date().toISOString(),

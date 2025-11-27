@@ -65,11 +65,28 @@ export type Drawing = {
 } & DrawingSettings;
 
 
+export interface ChatMessage {
+  id: string;
+  sender: {
+    name: string;
+    role: 'master' | 'player' | 'group';
+  };
+  content: {
+    type: 'text';
+    value: string;
+  } | {
+    type: 'image';
+    value: string; // data URI
+  };
+  timestamp: string;
+}
+
 export interface GameState {
   characters: Character[];
   allCharacters?: Character[]; // Optional: For player roles to have the full list for map rendering
   revealedAreas: RevealedArea[];
   drawings: Drawing[];
+  chatMessages: ChatMessage[];
   currentTurnId: string;
   mapImage: {
     id: string;

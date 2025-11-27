@@ -32,15 +32,15 @@ import {
     removeCharacter,
     resetForNewMap,
     addChatMessage
-} from '@/app/game/actions';
+} from '../actions';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DRAW_COLORS } from '@/lib/colors';
-import { ScrollArea } from '../ui/scroll-area';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { QuickHpChanger } from './quick-hp-changer';
-import { Checkbox } from '../ui/checkbox';
-import { Separator } from '../ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
 import { ChatPanel } from './chat-panel';
 
 interface GameLayoutProps {
@@ -108,8 +108,6 @@ export function GameLayout({ role }: GameLayoutProps) {
 
   const [isMapUploading, setIsMapUploading] = useState(false);
   const [isIconUploading, setIsIconUploading] = useState(false);
-
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const charactersForUi = gameState?.characters || [];
   const allCharactersForMap = gameState?.allCharacters || gameState?.characters || [];
@@ -812,25 +810,9 @@ export function GameLayout({ role }: GameLayoutProps) {
               viewState={viewState}
               setViewState={setViewState}
               className="pt-16 md:pt-20"
+              chatMessages={chatMessages}
+              onSendMessage={handleSendMessage}
             />
-            <div className="absolute bottom-4 right-4 z-40">
-                <Button 
-                    variant="secondary" 
-                    size="icon" 
-                    className="rounded-full w-12 h-12 shadow-lg"
-                    onClick={() => setIsChatOpen(!isChatOpen)}
-                >
-                    <MessageSquare />
-                </Button>
-            </div>
-            {isChatOpen && (
-              <ChatPanel 
-                role={role} 
-                messages={chatMessages}
-                onSendMessage={handleSendMessage} 
-                onClose={() => setIsChatOpen(false)}
-              />
-            )}
           </div>
         </SidebarInset>
       </SidebarProvider>

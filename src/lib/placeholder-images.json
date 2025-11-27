@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "map-default",
-      "description": "Mappa di default personalizzata.",
-      "imageUrl": "/mappa-default.jpg",
-      "imageHint": "custom map grid"
+      "description": "Una mappa generica di una regione fantasy.",
+      "imageUrl": "https://images.unsplash.com/photo-1617505907947-9cb31eb80183?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmYW50YXN5JTIwbWFwJTIwZ3JpZHxlbnwwfHx8fDE3NjIwOTAyMDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fantasy map grid"
     }
   ]
 }
